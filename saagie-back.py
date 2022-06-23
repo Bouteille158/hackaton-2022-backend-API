@@ -1,8 +1,18 @@
 from saagieapi import SaagieApi
 from flask import Flask, send_file
 import json
+from jsonmerge import Merger
 
 app = Flask(__name__)
+
+schema = {
+    "properties": {
+        "bar": {
+            "mergeStrategy": "append"
+        }
+    }
+}
+merger = Merger(schema)
 
 @app.route("/")
 def hello_world():
@@ -33,10 +43,13 @@ def getProjectJobs(projectId):
     return projectJobs
 
 @app.route("/project/<projectId>/getBackup/")
-def getProjectBackup(projectId):
+def getJobsBackup(projectId):
+    project = getProjectInfo(projectId)
     jobs = getProjectJobs(projectId)
+    data = merger.merge(project, jobs)
+    print(data)
     with open('backup.json', 'w', encoding='utf-8') as f:
-        json.dump(jobs, f, ensure_ascii=False, indent=4)
+        json.dump(data, f, ensure_ascii=False, indent=4)
     return send_file('backup.json', as_attachment=True)
 
 '''
