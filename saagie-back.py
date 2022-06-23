@@ -5,7 +5,8 @@ import json
 from jsonmerge import Merger
 
 app = Flask(__name__)
-
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 schema = {
     "properties": {
         "bar": {
@@ -15,20 +16,8 @@ schema = {
 }
 merger = Merger(schema)
 
-def application(environ, start_response):
-  if environ['REQUEST_METHOD'] == 'OPTIONS':
-    start_response(
-      '200 OK',
-      [
-        ('Content-Type', 'application/json'),
-        ('Access-Control-Allow-Origin', '*'),
-        ('Access-Control-Allow-Headers', 'Authorization, Content-Type'),
-        ('Access-Control-Allow-Methods', 'POST'),
-      ]
-    )
-    return ''
-
 @app.route("/")
+@cross_origin
 def hello_world():
     return "<p>Hello, World!</p>"
 
@@ -37,12 +26,14 @@ saagie = SaagieApi.easy_connect(url_saagie_platform="https://demo-workspace.a4.s
                    password="Saagie.Hakathon")
 
 @app.route("/projectList")
+@cross_origin
 def getProjects():
     projects = saagie.projects.list()
     print(projects)
     return projects
 
 @app.route("/project/<projectId>")
+@cross_origin
 def getProjectInfo(projectId):
     print(projectId)
     projectInfo = saagie.projects.get_info(projectId)
@@ -50,6 +41,7 @@ def getProjectInfo(projectId):
     return projectInfo
 
 @app.route("/project/<projectId>/jobs")
+@cross_origin
 def getProjectJobs(projectId):
     print(projectId)
     projectJobs = saagie.jobs.list_for_project(project_id=projectId)
@@ -57,6 +49,7 @@ def getProjectJobs(projectId):
     return projectJobs
 
 @app.route("/project/<projectId>/getBackup/")
+@cross_origin
 def getJobsBackup(projectId):
     project = getProjectInfo(projectId)
     jobs = getProjectJobs(projectId)
