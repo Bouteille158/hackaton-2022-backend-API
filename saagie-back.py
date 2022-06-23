@@ -1,5 +1,6 @@
 from saagieapi import SaagieApi
 from flask import Flask, send_file
+from flask_cors import CORS, cross_origin
 import json
 from jsonmerge import Merger
 
