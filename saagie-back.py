@@ -1,5 +1,3 @@
-import mimetypes
-from httplib2 import Response
 from saagieapi import SaagieApi
 from flask import Flask, send_file
 import json
